@@ -8,7 +8,9 @@ import { HASH_PLACEHOLDER_RE, LAYER_MARK_ALL, LAYER_PLACEHOLDER_RE, getHashPlace
 import { applyTransformers } from './shared-integration/transformers'
 import { getPath } from './shared-integration/utils'
 
-export interface WebpackPluginOptions<Theme extends {} = {}> extends UserConfig<Theme> {}
+export interface WebpackPluginOptions<Theme extends {} = {}> extends UserConfig<Theme> {
+  cssMode?: 'import' | 'style'
+}
 
 const PLUGIN_NAME = 'unocss-webpack-uniapp2'
 const UPDATE_DEBOUNCE = 10
@@ -17,6 +19,8 @@ export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Them
   return config
 }
 
+const styleCssRegExp = /\/\*\s*unocss-start\s*\*\/[\s\S]*\/\*\s*unocss-end\s*\*\//
+
 export default function WebpackPlugin<Theme extends {}>(
   configOrPath?: WebpackPluginOptions<Theme> | string,
   defaults?: UserConfigDefaults,
@@ -24,6 +28,10 @@ export default function WebpackPlugin<Theme extends {}>(
   return createUnplugin(() => {
     const ctx = createContext<WebpackPluginOptions>(configOrPath as any, defaults)
     const { uno, tokens, filter, extract, onInvalidate } = ctx
+    let cssMode = 'import'
+
+    if (typeof configOrPath === 'object')
+      cssMode = configOrPath.cssMode || 'import'
 
     let timer: any
     onInvalidate(() => {
@@ -73,6 +81,10 @@ export default function WebpackPlugin<Theme extends {}>(
       },
       // serve the placeholders in virtual module
       load(id) {
+        // 取消占位符
+        if (cssMode === 'style')
+          return
+
         let layer = resolveLayer(getPath(id))
         if (!layer) {
           const entry = resolveId(id)
@@ -94,24 +106,41 @@ export default function WebpackPlugin<Theme extends {}>(
             for (const file of files) {
               let code = compilation.assets[file].source().toString()
               let replaced = false
-              code = code.replace(HASH_PLACEHOLDER_RE, '')
-              code = code.replace(LAYER_PLACEHOLDER_RE, (_, quote, layer) => {
-                replaced = true
-                const css = layer === LAYER_MARK_ALL
-                  ? result.getLayers(undefined, Array.from(entries)
-                    .map(i => resolveLayer(i)).filter((i): i is string => !!i))
-                  : result.getLayer(layer) || ''
 
-                if (!quote)
-                  return css
+              if (cssMode === 'import') {
+                code = code.replace(HASH_PLACEHOLDER_RE, '')
+                code = code.replace(LAYER_PLACEHOLDER_RE, (_, quote, layer) => {
+                  replaced = true
+                  const css = layer === LAYER_MARK_ALL
+                    ? result.getLayers(undefined, Array.from(entries)
+                      .map(i => resolveLayer(i)).filter((i): i is string => !!i))
+                    : result.getLayer(layer) || ''
 
-                // the css is in a js file, escaping
-                let escaped = JSON.stringify(css).slice(1, -1)
-                // in `eval()`, escaping twice
-                if (quote === '\\"')
-                  escaped = JSON.stringify(escaped).slice(1, -1)
-                return quote + escaped
-              })
+                  if (!quote)
+                    return css
+
+                  // the css is in a js file, escaping
+                  let escaped = JSON.stringify(css).slice(1, -1)
+                  // in `eval()`, escaping twice
+                  if (quote === '\\"')
+                    escaped = JSON.stringify(escaped).slice(1, -1)
+                  return quote + escaped
+                })
+              }
+              else {
+                if (styleCssRegExp.test(code)) {
+                  replaced = true
+                  let css
+                    = result.getLayers(undefined, Array.from(entries)
+                      .map(i => resolveLayer(i)).filter((i): i is string => !!i))
+
+                  if (process.env.UNI_PLATFORM === 'app-plus')
+                    css = css.replace('page', 'body')
+
+                  code = code.replace(styleCssRegExp, `/* unocss-start */${css}/* unocss-end */`)
+                }
+              }
+
               if (replaced)
                 compilation.assets[file] = new WebpackSources.RawSource(code) as any
             }
