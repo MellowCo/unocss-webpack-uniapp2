@@ -1,0 +1,56 @@
+{
+  "name": "unocss-webpack-uniapp2",
+  "version": "0.1.0",
+  "description": "The UnoCSS Webpack plugin for UniApp2",
+  "author": "MellowCo",
+  "license": "MIT",
+  "homepage": "https://github.com/MellowCo/unocss-webpack-uniapp2#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MellowCo/unocss-webpack-uniapp2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MellowCo/unocss-webpack-uniapp2/issues"
+  },
+  "keywords": [
+    "unocss",
+    "webpack-plugin",
+    "uniapp"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild",
+    "stub": "unbuild --stub"
+  },
+  "peerDependencies": {
+    "webpack": "^4 || ^5"
+  },
+  "dependencies": {
+    "@ampproject/remapping": "^2.2.0",
+    "@rollup/pluginutils": "^4.2.1",
+    "@unocss/config": "^0.44.5",
+    "@unocss/core": "^0.44.5",
+    "magic-string": "^0.26.2",
+    "unplugin": "^0.7.0",
+    "webpack-sources": "^3.2.3"
+  },
+  "devDependencies": {
+    "@types/webpack": "^5.28.0",
+    "@types/webpack-sources": "^3.2.0",
+    "rollup": "^2.77.0",
+    "webpack": "^5.73.0"
+  }
+}
