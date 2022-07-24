@@ -1,6 +1,6 @@
 {
   "name": "unocss-webpack-uniapp2",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The UnoCSS Webpack plugin for UniApp2",
   "author": "MellowCo",
   "license": "MIT",
@@ -35,7 +35,9 @@
     "build": "unbuild",
     "stub": "unbuild --stub",
     "uniapp2": "nr build &&npm -C examples/uniapp_vue2 run dev:mp-weixin",
-    "uniapp2:h5": "nr build &&npm -C examples/uniapp_vue2 run dev:h5"
+    "uniapp2:h5": "nr build &&npm -C examples/uniapp_vue2 run dev:h5",
+    "prepublishOnly": "npm run build",
+    "release": "bumpp --commit --push --tag && npm publish"
   },
   "peerDependencies": {
     "webpack": "^4 || ^5"
@@ -54,6 +56,7 @@
     "@types/node": "^18.0.6",
     "@types/webpack": "^5.28.0",
     "@types/webpack-sources": "^3.2.0",
+    "bumpp": "^8.2.1",
     "eslint": "^8.20.0",
     "rollup": "^2.77.0",
     "typescript": "^4.7.4",
