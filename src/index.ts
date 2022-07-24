@@ -10,7 +10,7 @@ import { getPath } from './shared-integration/utils'
 
 export interface WebpackPluginOptions<Theme extends {} = {}> extends UserConfig<Theme> {}
 
-const PLUGIN_NAME = 'unocss:uniapp2-webpack'
+const PLUGIN_NAME = 'unocss-webpack-uniapp2'
 const UPDATE_DEBOUNCE = 10
 
 export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Theme>) {
@@ -46,7 +46,7 @@ export default function WebpackPlugin<Theme extends {}>(
     const hashes = new Map<string, string>()
 
     const plugin = <UnpluginOptions>{
-      name: 'unocss:webpack',
+      name: PLUGIN_NAME,
       enforce: 'pre',
       transformInclude(id) {
         return filter('', id) && !id.match(/\.html$/)
@@ -85,14 +85,12 @@ export default function WebpackPlugin<Theme extends {}>(
       },
       webpack(compiler) {
         // replace the placeholders
-        compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
+        compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
           compilation.hooks.optimizeAssets.tap(PLUGIN_NAME, async () => {
             const files = Object.keys(compilation.assets)
-
             await Promise.all(tasks)
             const result = await uno.generate(tokens, { minify: true })
-            // @ts-expect-error do it
-            console.log('[ uni ] >', `${uni.upx2px(100)}px`)
+
             for (const file of files) {
               let code = compilation.assets[file].source().toString()
               let replaced = false
@@ -104,7 +102,6 @@ export default function WebpackPlugin<Theme extends {}>(
                     .map(i => resolveLayer(i)).filter((i): i is string => !!i))
                   : result.getLayer(layer) || ''
 
-                // console.log('[ css ] >', css)
                 if (!quote)
                   return css
 
