@@ -4,8 +4,10 @@ const transformWeClass = require('unplugin-transform-we-class/webpack')
 module.exports = {
   configureWebpack: {
     plugins: [
-      UnoCSS(),
+      UnoCSS({
+        cssMode: 'style',
+      }),
       transformWeClass(),
     ],
-  }
+  },
 }
