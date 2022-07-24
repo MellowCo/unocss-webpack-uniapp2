@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "es2017",
+    "module": "esnext",
+    "lib": ["esnext"],
+    "esModuleInterop": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "jsx": "preserve",
+    "types": [
+      "node",
+    ],
+  },
+  "exclude": [
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/examples/**",
+  ]
+}
