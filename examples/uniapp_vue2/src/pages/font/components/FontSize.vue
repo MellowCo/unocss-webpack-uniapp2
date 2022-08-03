@@ -3,20 +3,17 @@
     <view class="text-2xl text-center my-3">
       font-size
     </view>
-    <view class="text-xs bg-[#ffffee]">
+    <view class="text-xs font-bold">
       text-xs
     </view>
-    <view class="text-sm text-blue-700:50 font-bold">
+    <view class="text-sm text-green bg-blue">
       text-sm
     </view>
-    <view class="text-base bg-red-400/60 w-300 h-300">
+    <view class="text-base font-bold text-#fefefe bg-red">
       text-base
     </view>
-    <view class="text-lg w-200 h-200 bg-blue-400:40">
-      text-lg112
-    </view>
-    <view class="text-40 font-bold">
-      text-401
+    <view class="text-lg">
+      text-lg
     </view>
     <view class="text-xl">
       text-xl

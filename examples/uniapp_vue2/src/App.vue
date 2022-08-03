@@ -13,8 +13,14 @@ export default {
 </script>
 
 <style>
-/* unocss-start */
-
-/* unocss-end */
+/* 占位符 */
+.uno-start {
+  --un: 0;
+}
+/* unocss 代码生成在这 */
+.uno-end {
+  --un: 0;
+}
+/* 占位符 */
 
 </style>
