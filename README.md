@@ -24,7 +24,82 @@
 
 
 ---
-## 参数说明
+## V0.1.3
+
+### 去除`import`模式
+
+> uniapp vue2 使用`import 'uno.css'` 无法及时生成`css`代码，导致打包时没有`css`代码
+
+### 注释占位符 改为 css选择器占位符
+
+> 原使用`注释占位符`(/* unocss-start */)，但是在`app`打包时，会将注释删除，导致打包后的`app`没有`css`文件
+
+1. vue.config.js
+
+```js
+const UnoCSS = require('unocss-webpack-uniapp2').default
+const transformWeClass = require('unplugin-transform-we-class/webpack')
+
+module.exports = {
+  configureWebpack: {
+    plugins: [
+      UnoCSS(),
+      transformWeClass(),
+    ],
+  },
+}
+```
+
+2. App.vue
+
+> 使用`uno-start`和`uno-end`,作为占位符，内容随意
+
+```vue
+<script>
+export default {
+  onLaunch() {
+    console.log('App Launch')
+  },
+  onShow() {
+    console.log('App Show')
+  },
+  onHide() {
+    console.log('App Hide')
+  },
+}
+</script>
+
+<style>
+    
+.uno-start {
+  --un: 0;
+}
+/* unocss 代码生成在这 */
+.uno-end {
+  --un: 0;
+}
+
+</style>
+```
+
+3. main.js
+
+```js
+// 不在需要导入 uno.css
+// import 'uno.css'
+```
+
+
+
+
+
+
+
+
+
+
+
+## 参数说明(V0.1.3以作废)
 
 * cssMode，可选值`style`和`import`,默认值`import`
 
@@ -145,9 +220,5 @@ app.$mount()
 
 
 
----
 
-## 结语
-
-相比之下，[uniapp vue vite](https://github.com/MellowCo/unocss-preset-weapp#vite)版本，不需要[h5兼容](https://github.com/MellowCo/unocss-preset-weapp#h5兼容)，`app`也支持`import 'uno.css'`,vite太香了
 
