@@ -35,6 +35,7 @@
     "build": "unbuild",
     "stub": "unbuild --stub",
     "uniapp2": "nr build &&npm -C examples/uniapp_vue2 run dev:mp-weixin",
+    "uniapp2:build": "nr build &&npm -C examples/uniapp_vue2 run build:mp-weixin",
     "uniapp2:h5": "nr build &&npm -C examples/uniapp_vue2 run dev:h5",
     "prepublishOnly": "npm run build",
     "release": "bumpp --commit --push --tag && npm publish"

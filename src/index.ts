@@ -92,15 +92,17 @@ export default function WebpackPlugin<Theme extends {}>(
             layer = resolveLayer(entry)
         }
         const hash = hashes.get(id)
+
         if (layer)
           return (hash ? getHashPlaceholder(hash) : '') + getLayerPlaceholder(layer)
       },
       webpack(compiler) {
         // replace the placeholders
         compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
-          compilation.hooks.optimizeAssets.tap(PLUGIN_NAME, async () => {
+          compilation.hooks.optimizeAssets.tapPromise(PLUGIN_NAME, async () => {
             const files = Object.keys(compilation.assets)
             await Promise.all(tasks)
+
             const result = await uno.generate(tokens, { minify: true })
 
             for (const file of files) {
@@ -111,6 +113,7 @@ export default function WebpackPlugin<Theme extends {}>(
                 code = code.replace(HASH_PLACEHOLDER_RE, '')
                 code = code.replace(LAYER_PLACEHOLDER_RE, (_, quote, layer) => {
                   replaced = true
+
                   const css = layer === LAYER_MARK_ALL
                     ? result.getLayers(undefined, Array.from(entries)
                       .map(i => resolveLayer(i)).filter((i): i is string => !!i))
@@ -140,7 +143,6 @@ export default function WebpackPlugin<Theme extends {}>(
                   code = code.replace(styleCssRegExp, `/* unocss-start */${css}/* unocss-end */`)
                 }
               }
-
               if (replaced)
                 compilation.assets[file] = new WebpackSources.RawSource(code) as any
             }
@@ -154,6 +156,7 @@ export default function WebpackPlugin<Theme extends {}>(
         return
 
       const result = await uno.generate(tokens)
+
       Array.from(plugin.__vfsModules)
         .forEach((id) => {
           const path = id.slice(plugin.__virtualModulePrefix.length).replace(/\\/g, '/')
@@ -167,6 +170,7 @@ export default function WebpackPlugin<Theme extends {}>(
 
           const hash = getHash(code)
           hashes.set(path, hash)
+
           plugin.__vfs.writeModule(id, code)
         })
     }
