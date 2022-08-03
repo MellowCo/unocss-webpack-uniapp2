@@ -14,7 +14,8 @@ export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Them
   return config
 }
 
-const styleCssRegExp = /\/\*\s*unocss-start\s*\*\/[\s\S]*\/\*\s*unocss-end\s*\*\//
+// const styleCssRegExp = /\/\*\s*unocss-start\s*\*\/[\s\S]*\/\*\s*unocss-end\s*\*\//
+const styleCssRegExp = /.uno-start[\s\S]*.uno-end/
 
 export default function WebpackPlugin<Theme extends {}>(
   configOrPath?: WebpackPluginOptions<Theme> | string,
@@ -62,10 +63,6 @@ export default function WebpackPlugin<Theme extends {}>(
               let code = compilation.assets[file].source().toString()
               let replaced = false
 
-              console.log(file)
-              // if (file === 'app-view.js')
-              //   console.log(code)
-
               if (styleCssRegExp.test(code)) {
                 replaced = true
                 let css = result.getLayers()
@@ -73,7 +70,8 @@ export default function WebpackPlugin<Theme extends {}>(
                 if (process.env.UNI_PLATFORM === 'app-plus')
                   css = css.replace('page', 'body')
 
-                code = code.replace(styleCssRegExp, `/* unocss-start */${css}/* unocss-end */`)
+                // code = code.replace(styleCssRegExp, `/* unocss-start */${css}/* unocss-end */`)
+                code = code.replace(styleCssRegExp, `.uno-start{--un: 0;}${css}.uno-end`)
               }
 
               if (replaced)
