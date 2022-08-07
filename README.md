@@ -2,6 +2,12 @@
 
 [UnoCSS](https://github.com/unocss/unocss) Webpack plugin for UniApp2, fork form [@unocss/webpack](https://github.com/unocss/unocss/tree/main/packages/webpack)
 
+## 示例app
+[unocss-webpack-uniapp2.apk](https://raw.githubusercontent.com/MellowCo/unocss-webpack-uniapp2/main/unocss-webpack-uniapp2.apk)
+
+![](https://fastly.jsdelivr.net/gh/MellowCo/image-host/2022/202208071542409.png)
+
+
 ## 解决问题
 
 >  小程序项目启动时 部分class生成失败 需要手动触发
@@ -70,7 +76,6 @@ export default {
 </script>
 
 <style>
-    
 .uno-start {
   --un: 0;
 }
@@ -78,7 +83,6 @@ export default {
 .uno-end {
   --un: 0;
 }
-
 </style>
 ```
 
