@@ -60,6 +60,9 @@ export default function WebpackPlugin<Theme extends {}>(
             const result = await uno.generate(tokens, { minify: true })
 
             for (const file of files) {
+              if (file === '*')
+                return
+
               let code = compilation.assets[file].source().toString()
               let replaced = false
 
