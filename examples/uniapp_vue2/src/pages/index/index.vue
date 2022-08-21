@@ -11,6 +11,7 @@ export default {
         { name: 'shortcuts', path: '/pages/shortcuts/index' },
         { name: ':class', path: '/pages/class/index' },
         { name: 'color', path: '/pages/color/index' },
+        { name: 'animation', path: '/pages/animation/index' },
       ],
     }
   },

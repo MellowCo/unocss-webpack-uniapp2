@@ -22,5 +22,4 @@ export default {
   --un: 0;
 }
 /* 占位符 */
-
 </style>

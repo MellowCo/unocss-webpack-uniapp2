@@ -54,6 +54,12 @@
       "style": {
         "navigationBarTitleText": "color"
       }
+    },
+    {
+      "path": "pages/animation/index",
+      "style": {
+        "navigationBarTitleText": "animation"
+      }
     }
   ],
   "globalStyle": {
