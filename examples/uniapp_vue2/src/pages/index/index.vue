@@ -12,6 +12,7 @@ export default {
         { name: ':class', path: '/pages/class/index' },
         { name: 'color', path: '/pages/color/index' },
         { name: 'animation', path: '/pages/animation/index' },
+        { name: 'attributify', path: '/pages/attributify-mode/index' },
       ],
     }
   },
@@ -34,4 +35,3 @@ export default {
     </view>
   </view>
 </template>
-

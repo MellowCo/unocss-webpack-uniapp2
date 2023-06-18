@@ -4,7 +4,7 @@ import { loadConfig } from '@unocss/config'
 import type { UnocssPluginContext, UserConfig, UserConfigDefaults } from '@unocss/core'
 import { BetterMap, createGenerator } from '@unocss/core'
 import { CSS_PLACEHOLDER, IGNORE_COMMENT, INCLUDE_COMMENT } from './constants'
-import { defaultExclude, defaultInclude } from './defaults'
+import { defaultPipelineExclude, defaultPipelineInclude } from './defaults'
 
 export function createContext<Config extends UserConfig<any> = UserConfig<any>>(
   configOrPath?: Config | string,
@@ -14,14 +14,16 @@ export function createContext<Config extends UserConfig<any> = UserConfig<any>>(
 ): UnocssPluginContext<Config> {
   let root = process.cwd()
   let rawConfig = {} as Config
+  let configFileList: string[] = []
   const uno = createGenerator(rawConfig, defaults)
-  let rollupFilter = createFilter(defaultInclude, defaultExclude)
+  let rollupFilter = createFilter(defaultPipelineInclude, defaultPipelineExclude)
 
   const invalidations: Array<() => void> = []
   const reloadListeners: Array<() => void> = []
 
   const modules = new BetterMap<string, string>()
   const tokens = new Set<string>()
+  const tasks: Promise<void>[] = []
   const affectedModules = new Set<string>()
 
   let ready = reloadConfig()
@@ -31,12 +33,15 @@ export function createContext<Config extends UserConfig<any> = UserConfig<any>>(
     resolveConfigResult(result)
 
     rawConfig = result.config
+    configFileList = result.sources
     uno.setConfig(rawConfig)
     uno.config.envMode = 'dev'
-    rollupFilter = createFilter(
-      rawConfig.include || defaultInclude,
-      rawConfig.exclude || defaultExclude,
-    )
+    rollupFilter = rawConfig.content?.pipeline === false
+      ? () => false
+      : createFilter(
+        rawConfig.content?.pipeline?.include || rawConfig.include || defaultPipelineInclude,
+        rawConfig.content?.pipeline?.exclude || rawConfig.exclude || defaultPipelineExclude,
+      )
     tokens.clear()
     await Promise.all(modules.map((code, id) => uno.applyExtractors(code, id, tokens)))
     invalidate()
@@ -92,6 +97,12 @@ export function createContext<Config extends UserConfig<any> = UserConfig<any>>(
     return rawConfig
   }
 
+  async function flushTasks() {
+    const _tasks = [...tasks]
+    await Promise.all(_tasks)
+    tasks.splice(0, _tasks.length)
+  }
+
   return {
     get ready() {
       return ready
@@ -99,6 +110,8 @@ export function createContext<Config extends UserConfig<any> = UserConfig<any>>(
     tokens,
     modules,
     affectedModules,
+    tasks,
+    flushTasks,
     invalidate,
     onInvalidate(fn: () => void) {
       invalidations.push(fn)
@@ -113,5 +126,6 @@ export function createContext<Config extends UserConfig<any> = UserConfig<any>>(
     getConfig,
     root,
     updateRoot,
+    getConfigFileList: () => configFileList,
   }
 }
