@@ -24,43 +24,62 @@
 
 ## 使用
 
-[具体使用](https://github.com/MellowCo/unocss-preset-weapp#uniapp-vue2)
-
-
+[具体使用 demo](https://github.com/MellowCo/unocss-preset-weapp#uniapp-vue2)
 
 
 ---
-## V0.1.3
-
-### 去除`import`模式
-
-> uniapp vue2 使用`import 'uno.css'` 无法及时生成`css`代码，导致打包时没有`css`代码
-
-### 注释占位符 改为 css选择器占位符
-
-> 原使用`注释占位符`(/* unocss-start */)，但是在`app`打包时，会将注释删除，导致打包后的`app`没有`css`文件
-
 1. vue.config.js
 
 ```js
 const UnoCSS = require('unocss-webpack-uniapp2').default
-const transformWeClass = require('unplugin-transform-we-class/webpack')
 
 module.exports = {
   configureWebpack: {
     plugins: [
       UnoCSS(),
-      transformWeClass(),
     ],
   },
 }
 ```
 
-2. App.vue
+2. unocss.config.js
+```js
+import presetWeapp from 'unocss-preset-weapp'
+import { extractorAttributify, transformerClass } from 'unocss-preset-weapp/transformer'
+import { defineConfig } from 'unocss'
+
+const { transformerAttributify, presetWeappAttributify } = extractorAttributify()
+
+export default defineConfig({
+  presets: [
+    // https://github.com/MellowCo/unocss-preset-weapp
+    presetWeapp({
+      // h5兼容
+      platform: 'uniapp',
+      isH5: process.env.UNI_PLATFORM === 'h5',
+    }),
+    presetWeappAttributify(),
+  ],
+  shortcuts: [
+    {
+      'border-base': 'border border-gray-500_10',
+      'center': 'flex justify-center items-center',
+    },
+  ],
+  transformers: [
+    transformerAttributify(),
+    transformerClass(),
+  ],
+})
+```
+
+
+
+3. App.vue
 
 > 使用`uno-start`和`uno-end`,作为占位符，内容随意
 
-```vue
+```html
 <script>
 export default {
   onLaunch() {
@@ -86,7 +105,8 @@ export default {
 </style>
 ```
 
-3. main.js
+
+4. main.js
 
 ```js
 // 不在需要导入 uno.css
@@ -94,133 +114,6 @@ export default {
 ```
 
 
-
-
-
-
-
-
-
-
-
-## 参数说明(V0.1.3以作废)
-
-* cssMode，可选值`style`和`import`,默认值`import`
-
-### style
-
-> `style`模式用于兼容`uniapp vue2 app`，如果需要开发`app`,`cssMode`设置为`style`,对`小程序`和`h5`没有影响
->
-> 因为`app`不可以使用`improt 'uno.css'`引入生成的css，
->
-> 所以可以将生成的unocss添加到`App.vue`入口文件中，就可以解决这个问题
-
-1. vue.config.js
-
-```js
-// 使用 unocss-webpack-uniapp2 替换 @unocss/webpack
-const UnoCSS = require('unocss-webpack-uniapp2').default
-const transformWeClass = require('unplugin-transform-we-class/webpack')
-
-module.exports = {
-  configureWebpack: {
-    plugins: [
-      UnoCSS({
-        // 需要app开发，cssMode设置为 style
-        cssMode: 'style',
-      }),
-      transformWeClass(),
-    ],
-  },
-}
-```
-
-2. main.js
-
-```js
-import Vue from 'vue'
-import App from './App'
-// 使用  cssMode: 'style'，不需要在 main.js 中引入 uno.css
-// import 'uno.css'
-
-Vue.config.productionTip = false
-
-App.mpType = 'app'
-
-const app = new Vue({
-  ...App,
-})
-app.$mount()
-```
-
-3. App.vue
-
-> 添加占位符(/* unocss-start */ ),用于生成css代码的填充
-
-```vue
-<script>
-export default {
-  onLaunch() {
-    console.log('App Launch')
-  },
-  onShow() {
-    console.log('App Show')
-  },
-  onHide() {
-    console.log('App Hide')
-  },
-}
-</script>
-
-<style>
-/* unocss-start */
-生成的unocss代码 会添加在这里
-/* unocss-end */
-</style>
-```
-
-
-
----
-
-### import
-
-> 默认参数，不支持`app`开发
-
-1. vue.config.js
-
-```js
-// 使用 unocss-webpack-uniapp2 替换 @unocss/webpack
-const UnoCSS = require('unocss-webpack-uniapp2').default
-const transformWeClass = require('unplugin-transform-we-class/webpack')
-
-module.exports = {
-  configureWebpack: {
-    plugins: [
-      UnoCSS(),
-      transformWeClass(),
-    ],
-  },
-}
-```
-
-2. main.js
-
-```js
-import Vue from 'vue'
-import App from './App'
-// 使用  cssMode: 'import'，需要在 main.js 中引入 uno.css
-import 'uno.css'
-
-Vue.config.productionTip = false
-
-App.mpType = 'app'
-
-const app = new Vue({
-  ...App,
-})
-app.$mount()
-```
 
 
 
