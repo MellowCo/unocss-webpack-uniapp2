@@ -15,7 +15,7 @@ export function defineConfig<Theme extends {}>(config: WebpackPluginOptions<Them
 }
 
 // const styleCssRegExp = /\/\*\s*unocss-start\s*\*\/[\s\S]*\/\*\s*unocss-end\s*\*\//
-const styleCssRegExp = /(\\n)?.uno-start[\s\S]*.uno-end/
+const styleCssRegExp = /(\\n|")?\.uno-start[\s\S]*\.uno-end/
 
 export default function WebpackPlugin<Theme extends {}>(
   configOrPath?: WebpackPluginOptions<Theme> | string,
